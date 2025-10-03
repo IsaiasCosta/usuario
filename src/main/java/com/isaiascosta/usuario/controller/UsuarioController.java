@@ -27,7 +27,7 @@ public class UsuarioController {
       Authentication authentication = authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), usuarioDTO.getSenha())
       );
-      return "Bearer" + jwtUtil.generateToken(authentication.getName());
+      return "Bearer " + jwtUtil.generateToken(authentication.getName());
    }
 
    //Criando  o usuario no banco
@@ -63,8 +63,14 @@ public class UsuarioController {
    }
 
    //Atualizar Usuario
+//   @PutMapping
+//   public ResponseEntity<Usuario> atualizarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+//      return ResponseEntity.ok(usuarioService.atualizarUsuario(usuarioDTO));
+//   }
+   //Atualizar o usuário logado pegando o e-mail que está dentro do token JWT.
    @PutMapping
-   public ResponseEntity<Usuario> atualizarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
-      return ResponseEntity.ok(usuarioService.atualizarUsuario(usuarioDTO));
+   public  ResponseEntity<UsuarioDTO> atualizarUsuarioPorEmail(@RequestBody UsuarioDTO dto,
+                                                               @RequestHeader("Authorization") String token){
+      return  ResponseEntity.ok(usuarioService.atualizarUsuarioPorEmail(token,dto));
    }
 }

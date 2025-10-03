@@ -6,14 +6,12 @@ import com.isaiascosta.usuario.infrastructure.entity.Usuario;
 import com.isaiascosta.usuario.infrastructure.exceptions.ConflictException;
 import com.isaiascosta.usuario.infrastructure.exceptions.ResourceNotFoundExecption;
 import com.isaiascosta.usuario.infrastructure.repository.UsuarioRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.isaiascosta.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +21,7 @@ public class UsuarioService {
    private final UsuarioRepository usuarioRepository;
    private final UsuarioConverter usuarioConverter;
    private final PasswordEncoder passwordEncoder;
+   private  final JwtUtil jwtUtil;
 
    // Regra de negócio: antes de salvar o usuário, verificar se o e-mail já está registrado no sistema.
    public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO) {
@@ -85,13 +84,28 @@ public class UsuarioService {
    }
 
    //Atualiza usuario e verifica se existe email
-   public Usuario atualizarUsuario(UsuarioDTO usuarioDTO) {
-      Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioDTO.getEmail());
-      if (usuarioExistente.isEmpty()) {
-         throw new EntityNotFoundException("Usuario com email " + usuarioDTO.getEmail());
-      }
-      Usuario usuario = usuarioExistente.get();
-      usuarioDTO.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
-      return usuarioRepository.save(usuario);
+//   public Usuario atualizarUsuario(UsuarioDTO usuarioDTO) {
+//      Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuarioDTO.getEmail());
+//      if (usuarioExistente.isEmpty()) {
+//         throw new EntityNotFoundException("Usuario com email " + usuarioDTO.getEmail());
+//      }
+//      Usuario usuario = usuarioExistente.get();
+//      usuarioDTO.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
+//      return usuarioRepository.save(usuario);
+//   }
+
+   //Regra Atualizar dados do usuario - extrair o email atravez do token
+   public UsuarioDTO atualizarUsuarioPorEmail(String token, UsuarioDTO dto){
+      //Extrai o email do usuario usando o token
+      String email = jwtUtil.extraiEmailToken(token.substring(7));
+      //Cliptografia da senha
+      dto.setSenha(dto.getSenha() != null ? passwordEncoder.encode(dto.getSenha()): null);
+      //Busca o email do usuario no banco de dados
+      Usuario usuarioEntity = usuarioRepository.findByEmail(email).orElseThrow(
+              ()-> new ResourceNotFoundExecption("Email não encontrado !" + email));
+      // Mesclou os dados que recebemos na requisição DTO com  o banco de dados
+      Usuario usuario = usuarioConverter.updateUsuario(dto,usuarioEntity);
+      // Salva dados convertidos do usuario - e retora esse dados convertidos paar UsuarioDTO
+      return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
    }
 }
