@@ -66,20 +66,17 @@ public class UsuarioController {
 
    //Atualizar o usuário logado pegando o e-mail que está dentro do token JWT.
    @PutMapping
-   public ResponseEntity<UsuarioDTO> atualizarUsuarioPorEmail(@RequestBody UsuarioDTO dto,
-                                                              @RequestHeader("Authorization") String token) {
+   public ResponseEntity<UsuarioDTO> atualizarUsuarioPorEmail(@RequestBody UsuarioDTO dto, @RequestHeader("Authorization") String token) {
       return ResponseEntity.ok(usuarioService.atualizarUsuarioPorEmail(token, dto));
    }
 
    @PutMapping("/endereco")
-   public ResponseEntity<EnderecoDTO> atualizarEnderecoPorId(@RequestBody EnderecoDTO enderecoDTO,
-                                                             @RequestParam("id") Long id) {
+   public ResponseEntity<EnderecoDTO> atualizarEnderecoPorId(@RequestBody EnderecoDTO enderecoDTO, @RequestParam("id") Long id) {
       return ResponseEntity.ok(usuarioService.atualizarEnderecoPorId(id, enderecoDTO));
    }
 
    @PutMapping("/telefone")
-   public ResponseEntity<TelefoneDTO> atualizaTelefonePorID(@RequestBody TelefoneDTO telefoneDTO,
-                                                            @RequestParam("id") Long id) {
+   public ResponseEntity<TelefoneDTO> atualizaTelefonePorID(@RequestBody TelefoneDTO telefoneDTO, @RequestParam("id") Long id) {
       return ResponseEntity.ok(usuarioService.atualizaTelefonePorID(id, telefoneDTO));
    }
 }
