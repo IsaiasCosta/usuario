@@ -46,15 +46,15 @@ public class SecurityConfig {
       http
               .csrf(AbstractHttpConfigurer::disable) // Desativa proteção CSRF para APIs REST (não aplicável a APIs que não mantêm estado)
               .authorizeHttpRequests(authorize -> authorize
-                      .requestMatchers("v3/api-docs/**","/swagger-ui/","/swagger-ui.html/").permitAll() // Permite acesso a documentação Swagger
+                      .requestMatchers("v3/api-docs/**","/swagger-ui/**","/swagger-ui.html/").permitAll() // Permite acesso a documentação Swagger
                       .requestMatchers("/usuario/login").permitAll() // Permite acesso ao endpoint de login sem autenticação
-                      .requestMatchers(HttpMethod.GET, "/auth").permitAll()// Permite acesso ao endpoint GET /auth sem autenticação
                       .requestMatchers(HttpMethod.POST, "/usuario").permitAll() // Permite acesso ao endpoint POST /usuario sem autenticação
                       .requestMatchers(HttpMethod.GET, "/usuario/**").permitAll()//✅ Libera acesso GET aos endpoints /usuario/*
                       .requestMatchers(HttpMethod.PUT, "usuario").permitAll() //Permite acesso PUT ao endpoit /usuario/*
                       .requestMatchers(HttpMethod.DELETE, "/usuario/*").permitAll() //Permite acesso ao endpoint DELETE
                       .requestMatchers(HttpMethod.DELETE, "/usuario/id/*").permitAll() //Permite acesso ao endpoint DELETE por ID
                       .requestMatchers("/usuario/**").authenticated() // Requer autenticação para qualquer endpoint que comece com /usuario/
+                      .requestMatchers(HttpMethod.GET,"/usuario/endereco/**").authenticated() // Requer autenticação para qualquer endpoint que comece com /endereco/
                       .anyRequest().authenticated() // Requer autenticação para todas as outras requisições
               )
               .sessionManagement(session -> session
