@@ -1,9 +1,11 @@
 package com.isaiascosta.usuario.controller;
 
 import com.isaiascosta.usuario.business.UsuarioService;
+import com.isaiascosta.usuario.business.ViaCepService;
 import com.isaiascosta.usuario.business.dto.EnderecoDTO;
 import com.isaiascosta.usuario.business.dto.TelefoneDTO;
 import com.isaiascosta.usuario.business.dto.UsuarioDTO;
+import com.isaiascosta.usuario.infrastructure.clients.ViaCepDTO;
 import com.isaiascosta.usuario.infrastructure.security.JwtUtil;
 import com.isaiascosta.usuario.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
    private final UsuarioService usuarioService;
+   private final ViaCepService viaCepService;
    private final AuthenticationManager authenticationManager;
    private final JwtUtil jwtUtil;
 
@@ -83,5 +86,10 @@ public class UsuarioController {
    @PutMapping("/telefone")
    public ResponseEntity<TelefoneDTO> atualizaTelefonePorID(@RequestBody TelefoneDTO telefoneDTO, @RequestParam("id") Long id) {
       return ResponseEntity.ok(usuarioService.atualizaTelefonePorID(id, telefoneDTO));
+   }
+
+   @GetMapping("/endereco/{cep}")
+   public  ResponseEntity<ViaCepDTO> buscarEndereco(@PathVariable("cep") String cep) {
+      return ResponseEntity.ok(viaCepService.buscarEndereco(cep));
    }
 }
