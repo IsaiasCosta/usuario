@@ -9,12 +9,19 @@ import com.isaiascosta.usuario.infrastructure.entity.Telefone;
 import com.isaiascosta.usuario.infrastructure.entity.Usuario;
 import com.isaiascosta.usuario.infrastructure.exceptions.ConflictException;
 import com.isaiascosta.usuario.infrastructure.exceptions.ResourceNotFoundExecption;
+import com.isaiascosta.usuario.infrastructure.exceptions.UnauthorizedException;
 import com.isaiascosta.usuario.infrastructure.repository.EnderecoRepository;
 import com.isaiascosta.usuario.infrastructure.repository.TelefoneRepository;
 import com.isaiascosta.usuario.infrastructure.repository.UsuarioRepository;
 import com.isaiascosta.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,6 +37,8 @@ public class UsuarioService {
    private final UsuarioConverter usuarioConverter;
    private final PasswordEncoder passwordEncoder;
    private final JwtUtil jwtUtil;
+   private final AuthenticationManager authenticationManager;
+
 
    // Regra de negócio: antes de salvar o usuário, verificar se o e-mail já está registrado no sistema.
    public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO) {
@@ -40,8 +49,20 @@ public class UsuarioService {
          return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
 
       } catch (ConflictException e) {
+         throw new ConflictException("Esse email já Cadastrato " , e);
+      }
+   }
 
-         throw new ConflictException("Esse email já está cadastrado ! " + e.getCause());
+   //Autenticar usuario
+   public String autenticarUsuario(UsuarioDTO usuarioDTO) {
+      try {
+         Authentication authentication = authenticationManager.authenticate(
+                 new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), usuarioDTO.getSenha())
+         );
+         return "Bearer " + jwtUtil.generateToken(authentication.getName());
+
+      } catch (BadCredentialsException | UsernameNotFoundException | AuthorizationDeniedException e) {
+         throw new UnauthorizedException("Usuario ou senha inválidos", e.getCause());
       }
    }
 
@@ -50,10 +71,10 @@ public class UsuarioService {
       try {
          boolean existe = verificaEmailExistente(email);
          if (existe) {
-            throw new ClassCastException("Esse email já Cadastrato" + email);
+            throw new ConflictException("Esse email já Cadastrato " + email);
          }
-      } catch (ClassCastException e) {
-         throw new ClassCastException("Esse email já Cadastrato" + e.getCause());
+      } catch (ConflictException e) {
+         throw new ConflictException("Esse email já Cadastrato " + e.getCause());
       }
    }
 
