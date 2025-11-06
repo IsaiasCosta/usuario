@@ -1,12 +1,14 @@
 package com.isaiascosta.usuario.infrastructure.exceptions;
 
-import javax.naming.AuthenticationException;
+import org.springframework.security.core.AuthenticationException;
+
 
 public class UnauthorizedException extends AuthenticationException {
    public UnauthorizedException(String message) {
       super(message);
    }
-   public UnauthorizedException(String message,Throwable throwable) {
-      super(message);
+
+   public UnauthorizedException(String message, Throwable throwable) {
+      super(message,throwable);
    }
 }

@@ -6,37 +6,28 @@ import com.isaiascosta.usuario.business.dto.EnderecoDTO;
 import com.isaiascosta.usuario.business.dto.TelefoneDTO;
 import com.isaiascosta.usuario.business.dto.UsuarioDTO;
 import com.isaiascosta.usuario.infrastructure.clients.ViaCepDTO;
-import com.isaiascosta.usuario.infrastructure.security.JwtUtil;
 import com.isaiascosta.usuario.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuario")
 @RequiredArgsConstructor
 
-@Tag(name= "Tarefas",description = "CAdsatro de tarefas de usuarios")
+@Tag(name = "Tarefas", description = "Cadastro de tarefas de usuarios")
 @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME)
 public class UsuarioController {
 
    private final UsuarioService usuarioService;
    private final ViaCepService viaCepService;
-   private final AuthenticationManager authenticationManager;
-   private final JwtUtil jwtUtil;
 
    //Login do Usuario
    @PostMapping("/login")
-   public String loginUsuario(@RequestBody UsuarioDTO usuarioDTO) {
-      Authentication authentication = authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), usuarioDTO.getSenha())
-      );
-      return "Bearer " + jwtUtil.generateToken(authentication.getName());
+   public  ResponseEntity<String> autenticarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+      return ResponseEntity.ok(usuarioService.autenticarUsuario(usuarioDTO));
    }
 
    //Criando  o usuario no banco
@@ -44,7 +35,6 @@ public class UsuarioController {
    public ResponseEntity<UsuarioDTO> salvarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
       return ResponseEntity.ok(usuarioService.salvarUsuario(usuarioDTO));
    }
-
 
    //Buscar Por Email
    @GetMapping("/por-email")
@@ -89,7 +79,7 @@ public class UsuarioController {
    }
 
    @GetMapping("/endereco/{cep}")
-   public  ResponseEntity<ViaCepDTO> buscarEndereco(@PathVariable("cep") String cep) {
+   public ResponseEntity<ViaCepDTO> buscarEndereco(@PathVariable("cep") String cep) {
       return ResponseEntity.ok(viaCepService.buscarEndereco(cep));
    }
 }
