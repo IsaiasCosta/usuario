@@ -45,8 +45,6 @@ public class UsuarioService {
       }
    }
 
-
-
    // Regra de negócio: verificar se o e-mail já existe. Caso exista, lançar uma exceção informando a duplicidade.
    public void emailExiste(String email) {
       try {

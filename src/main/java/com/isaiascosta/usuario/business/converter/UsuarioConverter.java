@@ -118,6 +118,7 @@ public class UsuarioConverter {
               .cep(dto.getCep())
               .build();
    }
+
    //Compare o telefone do usuario
    public Telefone updateTelefone(TelefoneDTO dto, Telefone entity) {
       return Telefone.builder()
