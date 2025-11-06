@@ -13,13 +13,9 @@ import java.util.Date;
 public class JwtUtil {
 
     // Chave secreta usada para assinar e verificar tokens JWT
-    private String secretKey = "sua-chave-secreta-super-segura-que-deve-ser-bem-longa";
+    private String secretKey = "sua-chave-secreta-super-segura-que-deve-ser-bem-longa-e-igual-nas-duas-apis";
 
     //Contrutor que gera uma chave secreta segura para asssinatura usando o algoritmo HS256
-    public JwtUtil() {
-        //Gera uma chave secreta para o algoritmo dse assinatura HS256
-        this.secretKey = String.valueOf(Keys.secretKeyFor(SignatureAlgorithm.HS256));
-    }
     // Gera um token JWT com o nome de usuário e validade de 1 hora
     public String generateToken(String username) {
         return Jwts.builder()
