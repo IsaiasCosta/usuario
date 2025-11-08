@@ -1,7 +1,7 @@
 package com.isaiascosta.usuario.controller;
 
 import com.isaiascosta.usuario.infrastructure.exceptions.ConflictException;
-import com.isaiascosta.usuario.infrastructure.exceptions.ResourceNotFoundExecption;
+import com.isaiascosta.usuario.infrastructure.exceptions.ResourceNotFoundException;
 import com.isaiascosta.usuario.infrastructure.exceptions.UnauthorizedException;
 import com.isaiascosta.usuario.infrastructure.exceptions.dto.ErrorResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-   @ExceptionHandler(ResourceNotFoundExecption.class)
-   public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundExecption(ResourceNotFoundExecption ex,
+   @ExceptionHandler(ResourceNotFoundException.class)
+   public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundExecption(ResourceNotFoundException ex,
                                                                            HttpServletRequest request) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
               .body(buildError(HttpStatus.NOT_FOUND.value(),
