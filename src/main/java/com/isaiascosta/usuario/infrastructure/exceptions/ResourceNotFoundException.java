@@ -1,10 +1,10 @@
 package com.isaiascosta.usuario.infrastructure.exceptions;
 
-public class ResourceNotFoundExecption extends RuntimeException {
-   public ResourceNotFoundExecption(String mensagem){
+public class ResourceNotFoundException extends RuntimeException {
+   public ResourceNotFoundException(String mensagem){
       super(mensagem);
    }
-   public ResourceNotFoundExecption(String mensagem, Throwable throwable){
+   public ResourceNotFoundException(String mensagem, Throwable throwable){
       super(mensagem,throwable);
    }
 }
